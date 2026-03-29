@@ -5,283 +5,45 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Globe Weather App</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌍</text></svg>">
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌍</text></svg>" type="image/svg+xml">
     <script src="https://cdn.jsdelivr.net/npm/globe.gl"></script>
 </head>
 <body>
-    <!-- Aurora Background -->
-    <div class="aurora-bg"></div>
-    <!-- Globe Container -->
+    <input type="text" id="locationInput" placeholder="Enter a city (e.g., Mysore)" maxlength="100">
+    
     <div id="globeViz"></div>
-    <!-- Header -->
-    <header class="header">
-        <div class="header-content">
-            <!-- Logo -->
-            <div class="logo">
-                <div class="logo-icon">☁️</div>
-                <div class="logo-text">
-                    <h1>Globe Weather</h1>
-                    <p>Worldwide Weather Visualization</p>
-                </div>
+    
+    <div id="weatherInfo">
+        <h2 id="cityName"></h2>
+        <div id="weatherDetails" class="weather-details">
+            <div class="detail">
+                <strong>Temperature:</strong> <span id="temp"></span>°C
             </div>
-            <!-- Search Bar -->
-            <div class="search-container">
-                <input type="text" id="locationInput" placeholder="Search for a city..." maxlength="100">
-                <div id="suggestions" class="suggestions"></div>
+            <div class="detail">
+                <strong>Feels Like:</strong> <span id="feelsLike"></span>°C
             </div>
-            <!-- Settings -->
-            <div class="settings-panel">
-                <div class="setting-group">
-                    <span class="setting-icon">🌡️</span>
-                    <button id="tempCelsius" class="unit-btn active">°C</button>
-                    <button id="tempFahrenheit" class="unit-btn">°F</button>
-                </div>
-                <div class="setting-group">
-                    <span class="setting-icon">💨</span>
-                    <button id="speedKmh" class="unit-btn active">km/h</button>
-                    <button id="speedMph" class="unit-btn">mph</button>
-                    <button id="speedMs" class="unit-btn">m/s</button>
-                </div>
+            <div class="detail">
+                <strong>Humidity:</strong> <span id="humidity"></span>%
+            </div>
+            <div class="detail">
+                <strong>Precipitation:</strong> <span id="precip"></span> mm
+            </div>
+            <div class="detail">
+                <strong>Weather:</strong> <span id="weatherDesc"></span>
+            </div>
+            <div class="detail">
+                <strong>Sunrise:</strong> <span id="sunrise"></span>
+            </div>
+            <div class="detail">
+                <strong>Sunset:</strong> <span id="sunset"></span>
+            </div>
+            <div class="detail">
+                <strong>Wind Speed:</strong> <span id="wind"></span> km/h
             </div>
         </div>
-    </header>
-    <!-- Welcome Screen -->
-    <div id="welcomeScreen" class="welcome-screen">
-        <div class="welcome-card glass-card">
-            <div class="welcome-globe">🌍</div>
-            <h2>Explore Global Weather</h2>
-            <p>Search for any city to view comprehensive weather data including forecasts, air quality, UV index, and more.</p>
-            <div class="quick-cities">
-                <button class="city-btn" data-city="New York">New York</button>
-                <button class="city-btn" data-city="Tokyo">Tokyo</button>
-                <button class="city-btn" data-city="London">London</button>
-                <button class="city-btn" data-city="Sydney">Sydney</button>
-                <button class="city-btn" data-city="Dubai">Dubai</button>
-            </div>
-        </div>
+        <p id="errorMsg" style="display: none; color: #ff6b6b;">City not found. Try another!</p>
     </div>
-    <!-- Weather Dashboard -->
-    <div id="weatherDashboard" class="weather-dashboard hidden">
-        <!-- Left Column -->
-        <div class="column left-column">
-            <!-- Current Weather -->
-            <div class="glass-card current-weather">
-                <div class="weather-header">
-                    <div>
-                        <h2 id="cityName"></h2>
-                        <p id="countryName" class="country"></p>
-                    </div>
-                    <div id="weatherIcon" class="weather-icon-large"></div>
-                </div>
-                <div class="temp-main">
-                    <span id="mainTemp" class="main-temp"></span>
-                    <span id="tempUnit" class="temp-unit">°C</span>
-                </div>
-                <p id="weatherDesc" class="weather-desc"></p>
-                <div class="temp-range">
-                    <span class="high">↑ <span id="tempHigh"></span></span>
-                    <span class="low">↓ <span id="tempLow"></span></span>
-                </div>
-                <div class="weather-stats">
-                    <div class="stat">
-                        <span class="stat-icon">🌡️</span>
-                        <div>
-                            <p class="stat-label">Feels Like</p>
-                            <p class="stat-value" id="feelsLike"></p>
-                        </div>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-icon">💧</span>
-                        <div>
-                            <p class="stat-label">Humidity</p>
-                            <p class="stat-value" id="humidity"></p>
-                        </div>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-icon">💨</span>
-                        <div>
-                            <p class="stat-label">Wind</p>
-                            <p class="stat-value" id="windSpeed"></p>
-                        </div>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-icon">🧭</span>
-                        <div>
-                            <p class="stat-label">Direction</p>
-                            <p class="stat-value" id="windDir"></p>
-                        </div>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-icon">📊</span>
-                        <div>
-                            <p class="stat-label">Pressure</p>
-                            <p class="stat-value" id="pressure"></p>
-                        </div>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-icon">👁️</span>
-                        <div>
-                            <p class="stat-label">Visibility</p>
-                            <p class="stat-value" id="visibility"></p>
-                        </div>
-                    </div>
-                </div>
-                <div class="sun-times">
-                    <div class="sun-time">
-                        <span class="sun-icon">🌅</span>
-                        <div>
-                            <p class="stat-label">Sunrise</p>
-                            <p class="stat-value" id="sunrise"></p>
-                        </div>
-                    </div>
-                    <div class="sun-progress"></div>
-                    <div class="sun-time">
-                        <span class="sun-icon">🌇</span>
-                        <div>
-                            <p class="stat-label">Sunset</p>
-                            <p class="stat-value" id="sunset"></p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- Hourly Forecast -->
-            <div class="glass-card">
-                <h3 class="card-title">24-Hour Forecast</h3>
-                <div id="hourlyForecast" class="hourly-forecast"></div>
-            </div>
-            <!-- 7-Day Forecast -->
-            <div class="glass-card">
-                <h3 class="card-title">7-Day Forecast</h3>
-                <div id="weeklyForecast" class="weekly-forecast"></div>
-            </div>
-        </div>
-        <!-- Right Column -->
-        <div class="column right-column">
-            <!-- Air Quality -->
-            <div class="glass-card">
-                <h3 class="card-title">💨 Air Quality Index</h3>
-                <div class="aqi-display">
-                    <div id="aqiCircle" class="aqi-circle">
-                        <span id="aqiValue">1</span>
-                    </div>
-                    <div class="aqi-info">
-                        <h4 id="aqiLevel">Good</h4>
-                        <p id="aqiDesc">Air quality is satisfactory.</p>
-                    </div>
-                </div>
-                <div class="aqi-scale">
-                    <span>Good</span>
-                    <div class="aqi-bar"></div>
-                    <span>Hazardous</span>
-                </div>
-                <div id="pollutants" class="pollutants"></div>
-            </div>
-            <!-- UV Index -->
-            <div class="glass-card">
-                <h3 class="card-title">☀️ UV Index</h3>
-                <div class="uv-display">
-                    <div id="uvCircle" class="uv-circle">
-                        <span id="uvValue">5</span>
-                    </div>
-                    <div class="uv-info">
-                        <h4 id="uvLevel">Moderate</h4>
-                        <p id="uvAdvice">Wear sunglasses on bright days.</p>
-                    </div>
-                </div>
-                <div class="uv-scale">
-                    <span>0</span>
-                    <span>3</span>
-                    <span>6</span>
-                    <span>8</span>
-                    <span>11+</span>
-                </div>
-                <div class="uv-bar-container">
-                    <div class="uv-bar"></div>
-                    <div id="uvIndicator" class="uv-indicator"></div>
-                </div>
-            </div>
-            <!-- Wind Compass -->
-            <div class="glass-card">
-                <h3 class="card-title">🧭 Wind & Pressure</h3>
-                <div class="wind-display">
-                    <div class="compass">
-                        <div class="compass-ring">
-                            <span class="dir n">N</span>
-                            <span class="dir e">E</span>
-                            <span class="dir s">S</span>
-                            <span class="dir w">W</span>
-                        </div>
-                        <div id="windArrow" class="wind-arrow">↑</div>
-                        <div class="compass-center"></div>
-                    </div>
-                    <div class="wind-stats">
-                        <div>
-                            <p class="stat-label">Speed</p>
-                            <p class="stat-value-lg" id="windSpeedLg"></p>
-                        </div>
-                        <div>
-                            <p class="stat-label">Direction</p>
-                            <p class="stat-value-lg" id="windDirLg"></p>
-                        </div>
-                        <div>
-                            <p class="stat-label">Gusts</p>
-                            <p class="stat-value-lg" id="windGust"></p>
-                        </div>
-                    </div>
-                </div>
-                <div class="pressure-clouds">
-                    <div class="stat">
-                        <span class="stat-icon">📊</span>
-                        <div>
-                            <p class="stat-label">Pressure</p>
-                            <p class="stat-value" id="pressureLg"></p>
-                        </div>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-icon">☁️</span>
-                        <div>
-                            <p class="stat-label">Cloud Cover</p>
-                            <p class="stat-value" id="clouds"></p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- Moon Phase -->
-            <div class="glass-card">
-                <h3 class="card-title">🌙 Moon Phase</h3>
-                <div class="moon-display">
-                    <div id="moonIcon" class="moon-icon">🌕</div>
-                    <div class="moon-info">
-                        <h4 id="moonPhase">Full Moon</h4>
-                        <p id="moonDay">Day 15 of lunar cycle</p>
-                        <div class="moon-times">
-                            <p>Next Full Moon: <span id="nextFull">14 days</span></p>
-                            <p>Next New Moon: <span id="nextNew">7 days</span></p>
-                        </div>
-                    </div>
-                </div>
-                <div class="illumination">
-                    <p>Illumination</p>
-                    <div class="illumination-bar">
-                        <div id="illuminationFill" class="illumination-fill"></div>
-                    </div>
-                    <span id="illuminationPercent">100%</span>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Loading Overlay -->
-    <div id="loadingOverlay" class="loading-overlay hidden">
-        <div class="loading-card glass-card">
-            <div class="loading-spinner">💧</div>
-            <p>Fetching weather data...</p>
-        </div>
-    </div>
-    <!-- Footer -->
-    <footer class="footer">
-        <p>🌍 Globe Weather App • Data simulated for demonstration</p>
-    </footer>
+
     <script src="script.js"></script>
 </body>
 </html>
